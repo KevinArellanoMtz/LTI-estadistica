@@ -1,0 +1,94 @@
+attach(Clientes) #AGREGA LA TABLA CLIENTES
+
+mean(Saldo_en_cuenta) #ES PARA VER LA MEDIA EN SALDO EN CUENTA
+median(Saldo_en_cuenta)#ES PAR VER LA MEDIANA EN SALDO EN CUENTA
+
+#ESTAS LINEAS MUESTRAN LAS CUENTAS CON SALDO MAYOR A 50,000
+print (Saldo_en_cuenta > 50000)
+print(Saldo_en_cuenta)
+
+#En las siguientes lineas se emplea este codigo para generar una grafica de distribucion
+# y ver la ligera diferencia entre sucursales
+plot(x = Clientes$contador_cliente, y = Clientes$Municipio_sucursal, col= Clientes[["Municipio_sucursal"]])
+legend(x = "topleft", legend = c("1.San pedro","2.monterrey","3.guadalupe","4.San Nicolas"), fill = c("Black", "Red","Green","Blue"), title = "Municipios")
+#ES PARA MOSTRAR LOS MUNICIPIOS Y SUS CANTIDADES REPARTIDAS
+print(Municipio_sucursal)
+
+#ESTE COMANDO SERA PARA VER UNA MEDIA Y MEDIANA DE SERVICIOS BANCARIOS
+#ESTO PARA SABER CUANTOS USAN EN UNA MEDIDA DETERMINADA
+mean(otros_servicios_bancarios_utilizados) #PARA VER LA MEDIA DE LOS SERVICIOS BANCARIOS UTULIZADOS
+median(otros_servicios_bancarios_utilizados) #PARA VER LA MEDIANA DE LOS SERVICIOS BANCARIOS UTULIZADOS
+#ADEMAS REALIZAREMOS una grafica de dispersion para ver los servicios bancario 
+plot(x = Clientes$contador_cliente, y = Clientes$otros_servicios_bancarios_utilizados)
+
+#CREAREMOS UNA TABLA PARA VER LA VARIANZA, MAXIMO MINIMO MEDIA ADEMAS NOTAREMOS QUE TAN FRECUENTE
+local({
+## Computar
+vars <- rk.list (Clientes[["Total_de_operaciones_en_cajero_al_mes"]])
+results <- data.frame ("Nombre de la variable"=I(names (vars)), check.names=FALSE)
+for (i in 1:length (vars)) {
+	var <- vars[[i]]
+
+	results[i, "Media"] <- mean(var,na.rm=TRUE)
+	results[i, "media geométrica"] <- try (prod (na.omit(var))^(1 / length (na.omit(var))))
+	results[i, "Varianza"] <- var(var,na.rm=TRUE)
+	results[i, "Mínimo"] <- min(var,na.rm=TRUE)
+	results[i, "Máximo"] <- max(var,na.rm=TRUE)
+	
+	# Estadística robusta
+}
+
+## Imprimir el resultado
+rk.header ("Estadística univariable", parameters=list("Omitir valores no presentes"="sí"))
+
+rk.results (results)
+})
+.rk.rerun.plugin.link(plugin="rkward::basic_statistics", settings="autre.real=0.00\ncurrent_filename=\nfile.selection=C:/Users/Willy/Desktop/Estadistica PIA/data\ngeo_mean.state=1\nharmonic_mean.state=0\nhuber.state=0\ninterquantile_mean.state=0\nirq.state=0\nlength.state=0\nmad.state=0\nmaximum.state=1\nmean.state=1\nmedian.state=0\nminimum.state=1\nnarm.state=1\nnbmaximum.real=0.00\nnbminimum.real=0.00\nquartile.state=0\nsave_to_file.state=0\nsaveas.active=0\nsaveas.objectname=rk.univariate\nsaveas.parent=.GlobalEnv\nsd.state=0\ntrim.state=0\nvari.state=1\nz.available=Clientes[[\\\"Total_de_operaciones_en_cajero_al_mes\\\"]]", label="Ejecutar de nuevo")
+.rk.make.hr()
+
+#Creamos otra de dispersion para ver la variedad de respuestas y probar
+#Que tan frecuentemente usan la tarjeta de debito y de donde son
+plot(x = Clientes$Municipio_sucursal, y = Clientes$Total_de_operaciones_en_cajero_al_mes, col= Clientes[["Tiene_tarjeta_de_debito"]])
+legend(x = "bottomleft", legend = c("SI","NO"), fill = c("Green", "Red"), title = "Respuestas")
+
+#Creamos variables para poder obtener los saldos y media y moda
+
+mean(Saldo_sanPedro)
+median(Saldo_sanPedro)
+
+mean(Saldo_Monterrey)
+median (Saldo_Monterrey)
+
+mean (Saldo_Guadalupe)
+median (Saldo_Guadalupe)
+
+mean(Saldo_sanNicolas)
+median(Saldo_sanNicolas)
+
+#Crearemos  una tabla donde muestre la desviación estándar y el rango
+local({
+## Computar
+vars <- rk.list (Clientes[["Saldo_en_cuenta"]])
+results <- data.frame ("Objeto"=I(names (vars)))
+for (i in 1:length (vars)) {
+	var <- vars[[i]]
+
+	# envolvemos cada llamada solo en una declaración de «try» continúen siempre en errores.
+	try ({
+		range <- try (range (var, na.rm=TRUE))
+		results[i, "mín"] <- range[1]
+		results[i, "máx"] <- range[2]
+	})
+	results[i, "desviación típica"] <- try (sd (var, na.rm=TRUE))
+	results[i, "Desviación absoluta de la mediana"] <- try (mad (var, constant = 1.4628, na.rm=TRUE))
+}
+## Imprimir el resultado
+rk.header ("Estadísticas descriptivas", parameters=list("Recorte de media"="0.00"))
+rk.header ("Desviación absoluta de la mediana", parameters=list("Constante"="1.4628",
+	"Tratamiento de muestras de tamaños uniformes"="usar promedio"), level=3)
+rk.results (results)
+})
+.rk.rerun.plugin.link(plugin="rkward::descriptive", settings="constMad.real=1.4628\ncurrent_filename=\nfile.selection=C:/Users/Willy/.rkward/data\ngeo_mean.state=0\nharmonic_mean.state=0\ninterquantile_mean.state=0\nlength.state=0\nmad.state=1\nmad_type.string=average\nmean.state=0\nmedian.state=0\nprod.state=0\nrange.state=1\nsave_to_file.state=0\nsd.state=1\nsum.state=0\ntrim.real=0.00\nx.available=Clientes[[\\\"Saldo_en_cuenta\\\"]]", label="Ejecutar de nuevo")
+.rk.make.hr()
+
+
